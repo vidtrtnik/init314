@@ -1,21 +1,28 @@
 #!/bin/bash
 
 # init314
-# version 1.0
+# version 1.1
 
 if (( $EUID != 0 )); then
 	echo "Run this script as root!"
 	exit 1
 fi
 
-source ./prints.sh
+source ./tools/prints.sh
+source ./tools/rsgen.sh
 
 adduserconf="/etc/adduser.conf"
 configtxt="/boot/config.txt"
 group="/etc/group"
+lightdmconf="/etc/lightdm/lightdm.conf"
+
+vncpassw=""
 
 audioout=1 #analog
 deletepi=0
+enablevnc=0
+
+autologin_user=""
 
 USER_R=""
 USER_N=""
@@ -32,10 +39,13 @@ main()
 	create_users
 	set_root_user
 	copy_to_home_dirs
+	configure_lightdm
 
 	edit_configtxt
 	setup_audio
 	append_environment
+	
+	setup_vnc
 
 	set_hostname
 	append_hosts
@@ -76,8 +86,20 @@ check_arguments()
                 HOSTNAME="$parameter"
                 ;;
                 
+            "-autologin")
+                autologin_user="$parameter"
+                ;;
+                
+            "-vncpass")
+                vncpassw="$parameter"
+                ;;
+                
             "-deletepi")
                 deletepi=1
+                ;;
+                
+            "-enablevnc")
+                enablevnc=1
                 ;;
                 
             *)
@@ -97,8 +119,8 @@ create_users()
 	
 	if [[ -z "$USER_R" ]] || [[ "$USER_R" == "" ]]; then USER_R="rootuser"; fi
 	if [[ -z "$USER_N" ]] || [[ "$USER_N" == "" ]]; then USER_N="normaluser"; fi
-	if [[ -z "$PASS_R" ]] || [[ "$PASS_R" == "" ]]; then PASS_R=$(base64 /dev/urandom | head -c 8 | tr -d '=+/'); fi
-	if [[ -z "$PASS_R" ]] || [[ "$PASS_R" == "" ]]; then PASS_N=$(base64 /dev/urandom | head -c 8 | tr -d '=+/'); fi
+	if [[ -z "$PASS_R" ]] || [[ "$PASS_R" == "" ]]; then PASS_R="$(rsgen_alnum 8)"; fi
+	if [[ -z "$PASS_R" ]] || [[ "$PASS_R" == "" ]]; then PASS_N="$(rsgen_alnum 8)"; fi
 
 	print_info "Setting DIR_MODE..."
 	init314_replace "DIR_MODE=0755" "DIR_MODE=0750" $adduserconf
@@ -112,12 +134,14 @@ create_users()
 	echo "$USER_N:$PASS_N" | sudo chpasswd
 }
 
+#---------- SET ROOT ----------#
 set_root_user()
 {
 	print_error "Adding root user to aditional groups..."
 	usermod -a -G sudo,netdev,audio,video,bluetooth $USER_R
 }
 
+#---------- COPY TO HOME DIRECTORIES ----------#
 copy_to_home_dirs()
 {
 	print_info "Copying files for specific users from ./home_folders/*..."
@@ -125,6 +149,15 @@ copy_to_home_dirs()
 	cp -r ./home_folders/user_n/. /home/$USER_N/
 	chown -R $USER_R:$USER_R /home/$USER_R
 	chown -R $USER_N:$USER_N /home/$USER_N
+}
+
+#---------- LIGHTDM ----------#
+configure_lightdm()
+{
+    if [[ ! -z "$autologin_user" ]] && [[ "$autologin_user" != "" ]]; then
+        print_info "Setting automatic login for user $autologin_user..."
+        init314_replace "autologin-user=pi" "autologin-user=$autologin_user" $lightdmconf
+	fi
 }
 
 #---------- CONFIG.TXT ----------#
@@ -147,6 +180,21 @@ append_environment()
 {
 	print_info "Appending additional environment variables..."
 	cat ./env_vars/environment.txt >> /etc/environment
+}
+
+#---------- VNC ----------#
+setup_vnc()
+{
+    if [[ -z "$vncpassw" ]] || [[ "$vncpassw" == "" ]]; then vncpassw="$(rsgen_alnum 8)"; fi
+    vncpassw_string="$vncpassw/\n$vncpassw/\n/\n"
+    
+	print_info "Setting VNC password..."
+	printf $vncpassw_string | vncpasswd -service
+	
+	if [[ "$enablevnc" -eq 1 ]]; then
+        print_info "Enabling VNC service..."
+        sudo systemctl enable vncserver-x11-serviced.service
+	fi
 }
 
 #---------- HOSTNAME ----------#
@@ -176,6 +224,7 @@ print_new_info()
 	print_error "$USER_R ($(id -u $USER_R)) --> $PASS_R" 
 	print_ok "$USER_N ($(id -u $USER_N)) --> $PASS_N"
 	print_noch "HOSTNAME --> $HOSTNAME"
+	print_noch "VNC password --> $vncpassw"
 	print_title "---------------------------"
 	#read -n 1
 }
