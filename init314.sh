@@ -17,6 +17,7 @@ group="/etc/group"
 lightdmconf="/etc/lightdm/lightdm.conf"
 
 vncpassw=""
+gpumem=-1
 
 audioout=1 #analog
 deletepi=0
@@ -101,6 +102,10 @@ check_arguments()
             "-enablevnc")
                 enablevnc=1
                 ;;
+		
+	    "-gpumem")
+                gpumem="$parameter"
+                ;;
                 
             *)
                 echo "Unknown argument: $arg"
@@ -166,6 +171,8 @@ edit_configtxt()
 	print_info "Editing config.txt..."
 	init314_replace "#hdmi_force_hotplug=1" "hdmi_force_hotplug=1" $configtxt
 	init314_replace "#disable_overscan=1" "disable_overscan=1" $configtxt
+	
+	if [[ "$gpumem" -gt 0 ]]; then echo "gpu_mem=$gpumem" >> $configtxt; fi
 }
 
 #---------- AUDIO ----------#

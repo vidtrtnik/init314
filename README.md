@@ -26,6 +26,9 @@ Parameters <code class="language-plaintext highlighter-rouge">-userr</code> and 
 ### Changing hostname
 You can pass parameter <code class="language-plaintext highlighter-rouge">-hostname="<i>newhostname</i>"</code> to change the hostname of your Raspberry Pi. If this parameter is not provided, then <i>raspberrypi</i> is used as the hostname.
 
+### Changing GPU memory
+You can pass parameter <code class="language-plaintext highlighter-rouge">-gpumem="<i>gpumemory</i>"</code> to change the available video memory of your Raspberry Pi (in Megabytes).
+
 ### Delete pi user
 If you pass <code class="language-plaintext highlighter-rouge">-deletepi</code>, then the default <i>pi</i> user will be deleted, along with the pi home folder. <b>Use with caution!</b>
 
@@ -59,4 +62,4 @@ TODO
 - Disables overscan
 
 ## TODO
-#####Current version: 1.1
+####Current version: 1.1
