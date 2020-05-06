@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # init314
-# version 1.1
+# version 1.1.1
 
 if (( $EUID != 0 )); then
 	echo "Run this script as root!"
@@ -69,41 +69,41 @@ check_arguments()
         
         case "$arg" in
         
-            "-userr")
+            "--u0")
                 username=$(echo "$parameter" | cut -d';' -f1)
                 password=$(echo "$parameter" | grep ";" | cut -d';' -f2)
                 USER_R="$username"
                 PASS_R="$password"
                 ;;
                 
-            "-usern")
+            "--u1")
                 username=$(echo "$parameter" | cut -d';' -f1)
                 password=$(echo "$parameter" | grep ";" | cut -d';' -f2)
                 USER_N="$username"
                 PASS_N="$password"
                 ;;
                 
-            "-hostname")
+            "--hostname")
                 HOSTNAME="$parameter"
                 ;;
                 
-            "-autologin")
+            "--autologin")
                 autologin_user="$parameter"
                 ;;
                 
-            "-vncpass")
+            "--vncpass")
                 vncpassw="$parameter"
                 ;;
                 
-            "-deletepi")
+            "--delpi")
                 deletepi=1
                 ;;
                 
-            "-enablevnc")
+            "--enablevnc")
                 enablevnc=1
                 ;;
 		
-	    "-gpumem")
+	    "--gpumem")
                 gpumem="$parameter"
                 ;;
                 
@@ -142,7 +142,7 @@ create_users()
 #---------- SET ROOT ----------#
 set_root_user()
 {
-	print_error "Adding root user to aditional groups..."
+	print_error "Adding root user to additional groups..."
 	usermod -a -G sudo,netdev,audio,video,bluetooth $USER_R
 }
 

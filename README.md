@@ -13,7 +13,7 @@ I believe that since Raspberry Pi 3B(+) and 4B have launched, these small comput
 ## Usage example
 I recommend to run <b>init314</b> after the default installation of Raspbian with desktop. Root is required to run this script.
 
-Usage: <code class="language-plaintext highlighter-rouge">./init314.sh [-userr="username;password"] [-usern="username;password"] [-hostname="newhostname"] [-deletepi] [-vncpass="password"] [-enablevnc]</code>
+Usage: <code class="language-plaintext highlighter-rouge">./init314.sh [--u0="username;password"] [--u1="username;password"] [--hostname="newhostname"] [--delpi] [--vncpass="password"] [--enablevnc]</code>
 
 ## Configuring the script
 ### Adding users
@@ -21,16 +21,16 @@ Usage: <code class="language-plaintext highlighter-rouge">./init314.sh [-userr="
 - For root account: <code class="language-plaintext highlighter-rouge">-userr="<i>username</i>;<i>password</i>"</code>
 - For normal account: <code class="language-plaintext highlighter-rouge">-usern="<i>username</i>;<i>password</i>"</code>
 
-Parameters <code class="language-plaintext highlighter-rouge">-userr</code> and <code class="language-plaintext highlighter-rouge">-usern</code> are optional. If they are not provided, user names <i>rootuser</i> and <i>normaluser</i> are used. Semicolon can separate the username and password. Value <i>password</i> specifies password for user account. If it is not provided, then the password for the user account will be randomly generated.
+Parameters <code class="language-plaintext highlighter-rouge">--u0</code> and <code class="language-plaintext highlighter-rouge">--u1</code> are optional. If they are not provided, user names <i>rootuser</i> and <i>normaluser</i> are used. Semicolon can separate the username and password. Value <i>password</i> specifies password for user account. If it is not provided, then the password for the user account will be randomly generated.
 
 ### Changing hostname
-You can pass parameter <code class="language-plaintext highlighter-rouge">-hostname="<i>newhostname</i>"</code> to change the hostname of your Raspberry Pi. If this parameter is not provided, then <i>raspberrypi</i> is used as the hostname.
+You can pass parameter <code class="language-plaintext highlighter-rouge">--hostname="<i>newhostname</i>"</code> to change the hostname of your Raspberry Pi. If this parameter is not provided, then <i>raspberrypi</i> is used as the hostname.
 
 ### Changing GPU memory
-You can pass parameter <code class="language-plaintext highlighter-rouge">-gpumem="<i>gpumemory</i>"</code> to change the available video memory of your Raspberry Pi (in Megabytes).
+You can pass parameter <code class="language-plaintext highlighter-rouge">--gpumem="<i>gpumemory</i>"</code> to change the available video memory of your Raspberry Pi (in Megabytes).
 
 ### Delete pi user
-If you pass <code class="language-plaintext highlighter-rouge">-deletepi</code>, then the default <i>pi</i> user will be deleted, along with the pi home folder. <b>Use with caution!</b>
+If you pass <code class="language-plaintext highlighter-rouge">--delpi</code>, then the default <i>pi</i> user will be deleted, along with the pi home folder. <b>Use with caution!</b>
 
 ### Home folders
 Additional files and folders for users can be put to <code class="language-plaintext highlighter-rouge">./home_folders/user_r/</code> and <code class="language-plaintext highlighter-rouge">./home_folders/user_n/</code>, which will be copied to appropriate home directiories for root and normal user.
@@ -39,12 +39,12 @@ Additional files and folders for users can be put to <code class="language-plain
 Put additional environment variables to: <code class="language-plaintext highlighter-rouge">./env_vars/environment.txt</code>. <b>init314</b> will append these variables to /etc/environment.
 
 ### VNC
-<b>init314</b> configures password for VNC server in service mode by default. Pass parameter <code class="language-plaintext highlighter-rouge">-vncpass="<i>password</i>"</code> to specify the password yourself. If this parameter is not provided, then the password is randomly generated. 
+<b>init314</b> configures password for VNC server in service mode by default. Pass parameter <code class="language-plaintext highlighter-rouge">--vncpass="<i>password</i>"</code> to specify the password yourself. If this parameter is not provided, then the password is randomly generated. 
 
-Parameter <code class="language-plaintext highlighter-rouge">-enablevnc</code> enables VNC server in service mode on startup.
+Parameter <code class="language-plaintext highlighter-rouge">--enablevnc</code> enables VNC server in service mode on startup.
 
 ### Auto login for specific user
-By default, no user is set to login automatically on boot. If you wish to specify a user, which will be loged in automatically on boot, then pass parameter <code class="language-plaintext highlighter-rouge">-autologin="<i>username</i>"</code>. 
+By default, no user is set to login automatically on boot. If you wish to specify a user, which will be loged in automatically on boot, then pass parameter <code class="language-plaintext highlighter-rouge">--autologin="<i>username</i>"</code>. 
 
 
 ### Desktop and theme settings
@@ -62,4 +62,8 @@ TODO
 - Disables overscan
 
 ## TODO
-####Current version: 1.1
+- Build GUI
+- Installing additional packages
+- Include custom themes
+
+<b>Current version: 1.1.1</b>
